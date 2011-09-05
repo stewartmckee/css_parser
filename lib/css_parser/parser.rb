@@ -15,8 +15,6 @@ module CssParser
   # [<tt>import</tt>] Follow <tt>@import</tt> rules. Boolean, default is <tt>true</tt>.
   # [<tt>io_exceptions</tt>] Throw an exception if a link can not be found. Boolean, default is <tt>true</tt>.
   class Parser
-    USER_AGENT   = "Ruby CSS Parser/#{CssParser::VERSION} (http://github.com/alexdunae/css_parser)"
-
     STRIP_CSS_COMMENTS_RX = /\/\*.*?\*\//m
     STRIP_HTML_COMMENTS_RX = /\<\!\-\-|\-\-\>/m
 
@@ -37,7 +35,8 @@ module CssParser
     def initialize(options = {})
       @options = {:absolute_paths => false,
                   :import => true,
-                  :io_exceptions => true}.merge(options)
+                  :io_exceptions => true,
+                  :user_agent => "Ruby CSS Parser/#{CssParser::VERSION} (http://github.com/alexdunae/css_parser)"}.merge(options)
 
       # array of RuleSets
       @rules = []
@@ -383,7 +382,7 @@ module CssParser
             http.verify_mode = OpenSSL::SSL::VERIFY_NONE
           end
 
-          res, src = http.get(uri.path, {'User-Agent' => USER_AGENT, 'Accept-Encoding' => 'gzip'})
+          res, src = http.get(uri.path, {'User-Agent' => @options[:user_agent], 'Accept-Encoding' => 'gzip'})
           charset = fh.respond_to?(:charset) ? fh.charset : 'utf-8'
 
           if res.code.to_i >= 400
